@@ -101,6 +101,14 @@ def calculate_gpa(total_grade):
     """GPA = (total grade / 100) * 5.0"""
     return (total_grade / 100) * 5.0
 
+
+def decide_status(formative_points, summative_points):
+    """Return (passed, formative_pct, summative_pct). Pass needs >= 50% in both."""
+    formative_pct = (formative_points / 60) * 100
+    summative_pct = (summative_points / 40) * 100
+    passed = formative_pct >= 50 and summative_pct >= 50
+    return passed, formative_pct, summative_pct
+
 def evaluate_grades(data):
     """
     Implement your logic here.
@@ -136,6 +144,9 @@ def evaluate_grades(data):
     gpa = calculate_gpa(total_grade)
     print(f"GPA: {gpa}")
 
+    passed, formative_pct, summative_pct = decide_status(formative_points, summative_points)
+    print(f"Formative %: {formative_pct}, Summative %: {summative_pct}, Passed: {passed}")
+    
     # TODO: a) Check if all scores are percentage based (0-100)
     # TODO: b) Validate total weights (Total=100, Summative=40, Formative=60)
     # TODO: c) Calculate the Final Grade and GPA
