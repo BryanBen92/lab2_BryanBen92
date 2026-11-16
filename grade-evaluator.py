@@ -31,12 +31,31 @@ def load_csv_data():
         print(f"An error occurred while reading the file: {e}")
         sys.exit(1)
 
+def validate_scores(data):
+    """Return the rows whose score is outside 0 to 100."""
+    invalid = []
+    for row in data:
+        if row['score'] < 0 or row['score'] > 100:
+            invalid.append(row)
+    return invalid
+
 def evaluate_grades(data):
     """
     Implement your logic here.
     'data' is a list of dictionaries containing the assignment records.
     """
     print("\n--- Processing Grades ---")
+
+    if not data:
+        print("Error: grades.csv has no assignment records.")
+        return
+
+    invalid = validate_scores(data)
+    if invalid:
+        for row in invalid:
+            print(f"Error: '{row['assignment']}' has score {row['score']}, expected 0 to 100.")
+        return
+    
     
     # TODO: a) Check if all scores are percentage based (0-100)
     # TODO: b) Validate total weights (Total=100, Summative=40, Formative=60)
@@ -46,11 +65,11 @@ def evaluate_grades(data):
     #          and determine which one(s) have the highest weight for resubmission.
     # TODO: f) Print the final decision (PASSED / FAILED) and resubmission options
     
-    pass
+
 
 if __name__ == "__main__":
     # 1. Load the data
     course_data = load_csv_data()
-    
+
     # 2. Process the features
     evaluate_grades(course_data)
