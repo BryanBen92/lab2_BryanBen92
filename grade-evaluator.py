@@ -85,6 +85,18 @@ def validate_weights(data):
         errors.append(f"Summative weight is {summative}, expected 40.")
     return errors
 
+def calculate_grades(data):
+    """Return (formative_points, summative_points) using score * weight / 100."""
+    formative_points = 0.0
+    summative_points = 0.0
+    for row in data:
+        points = row['score'] * row['weight'] / 100
+        if row['group'] == 'Formative':
+            formative_points += points
+        else:
+            summative_points += points
+    return formative_points, summative_points
+
 def evaluate_grades(data):
     """
     Implement your logic here.
@@ -107,7 +119,16 @@ def evaluate_grades(data):
     if weight_errors:
         for message in weight_errors:
             print(f"Error: {message}")
-        return    
+        return 
+    
+    formative_points, summative_points = calculate_grades(data)
+    total_grade = formative_points + summative_points
+
+    # Temporary check, replaced by the final report in commit 7
+    print(f"Formative points: {formative_points}")
+    print(f"Summative points: {summative_points}")
+    print(f"Total grade: {total_grade}")
+          
     # TODO: a) Check if all scores are percentage based (0-100)
     # TODO: b) Validate total weights (Total=100, Summative=40, Formative=60)
     # TODO: c) Calculate the Final Grade and GPA
