@@ -39,6 +39,52 @@ def validate_scores(data):
             invalid.append(row)
     return invalid
 
+def validate_weights(data):
+    """Return a list of error messages. Empty list means weights are valid."""
+    total = 0.0
+    formative = 0.0
+    summative = 0.0
+    for row in data:
+        total += row['weight']
+        if row['group'] == 'Formative':
+            formative += row['weight']
+        elif row['group'] == 'Summative':
+            summative += row['weight']
+        else:
+            return [f"Unknown group '{row['group']}' for '{row['assignment']}'. Use Formative or Summative."]
+
+    errors = []
+    if abs(total - 100) > 0.001:
+        errors.append(f"Total weight is {total}, expected 100.")
+    if abs(formative - 60) > 0.001:
+        errors.append(f"Formative weight is {formative}, expected 60.")
+    if abs(summative - 40) > 0.001:
+        errors.append(f"Summative weight is {summative}, expected 40.")
+    return errors
+
+def validate_weights(data):
+    """Return a list of error messages. Empty list means weights are valid."""
+    total = 0.0
+    formative = 0.0
+    summative = 0.0
+    for row in data:
+        total += row['weight']
+        if row['group'] == 'Formative':
+            formative += row['weight']
+        elif row['group'] == 'Summative':
+            summative += row['weight']
+        else:
+            return [f"Unknown group '{row['group']}' for '{row['assignment']}'. Use Formative or Summative."]
+
+    errors = []
+    if abs(total - 100) > 0.001:
+        errors.append(f"Total weight is {total}, expected 100.")
+    if abs(formative - 60) > 0.001:
+        errors.append(f"Formative weight is {formative}, expected 60.")
+    if abs(summative - 40) > 0.001:
+        errors.append(f"Summative weight is {summative}, expected 40.")
+    return errors
+
 def evaluate_grades(data):
     """
     Implement your logic here.
@@ -55,8 +101,13 @@ def evaluate_grades(data):
         for row in invalid:
             print(f"Error: '{row['assignment']}' has score {row['score']}, expected 0 to 100.")
         return
-    
-    
+
+   
+    weight_errors = validate_weights(data)
+    if weight_errors:
+        for message in weight_errors:
+            print(f"Error: {message}")
+        return    
     # TODO: a) Check if all scores are percentage based (0-100)
     # TODO: b) Validate total weights (Total=100, Summative=40, Formative=60)
     # TODO: c) Calculate the Final Grade and GPA
