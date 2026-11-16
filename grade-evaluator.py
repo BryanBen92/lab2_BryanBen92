@@ -97,6 +97,10 @@ def calculate_grades(data):
             summative_points += points
     return formative_points, summative_points
 
+def calculate_gpa(total_grade):
+    """GPA = (total grade / 100) * 5.0"""
+    return (total_grade / 100) * 5.0
+
 def evaluate_grades(data):
     """
     Implement your logic here.
@@ -128,7 +132,10 @@ def evaluate_grades(data):
     print(f"Formative points: {formative_points}")
     print(f"Summative points: {summative_points}")
     print(f"Total grade: {total_grade}")
-          
+
+    gpa = calculate_gpa(total_grade)
+    print(f"GPA: {gpa}")
+
     # TODO: a) Check if all scores are percentage based (0-100)
     # TODO: b) Validate total weights (Total=100, Summative=40, Formative=60)
     # TODO: c) Calculate the Final Grade and GPA
