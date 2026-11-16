@@ -108,10 +108,7 @@ def find_resubmissions(data):
     return eligible
 
 def evaluate_grades(data):
-    """
-    Implement your logic here.
-    'data' is a list of dictionaries containing the assignment records.
-    """
+    """Validate the data, calculate results and print the final decision."""
     print("\n--- Processing Grades ---")
 
     if not data:
@@ -124,38 +121,30 @@ def evaluate_grades(data):
             print(f"Error: '{row['assignment']}' has score {row['score']}, expected 0 to 100.")
         return
 
-   
     weight_errors = validate_weights(data)
     if weight_errors:
         for message in weight_errors:
             print(f"Error: {message}")
-        return 
-    
+        return
+
     formative_points, summative_points = calculate_grades(data)
     total_grade = formative_points + summative_points
-
-    # Temporary check, replaced by the final report in commit 7
-    print(f"Formative points: {formative_points}")
-    print(f"Summative points: {summative_points}")
-    print(f"Total grade: {total_grade}")
-
     gpa = calculate_gpa(total_grade)
-    print(f"GPA: {gpa}")
-
-    resubmit = find_resubmissions(data)
-    print(f"Resubmit: {[row['assignment'] for row in resubmit]}")
-
     passed, formative_pct, summative_pct = decide_status(formative_points, summative_points)
-    print(f"Formative %: {formative_pct}, Summative %: {summative_pct}, Passed: {passed}")
+    resubmit = find_resubmissions(data)
 
-    # TODO: a) Check if all scores are percentage based (0-100)
-    # TODO: b) Validate total weights (Total=100, Summative=40, Formative=60)
-    # TODO: c) Calculate the Final Grade and GPA
-    # TODO: d) Determine Pass/Fail status (>= 50% in BOTH categories)
-    # TODO: e) Check for failed formative assignments (< 50%)
-    #          and determine which one(s) have the highest weight for resubmission.
-    # TODO: f) Print the final decision (PASSED / FAILED) and resubmission options
-    
+    print(f"Formative: {formative_points:.2f} / 60 ({formative_pct:.2f}%)")
+    print(f"Summative: {summative_points:.2f} / 40 ({summative_pct:.2f}%)")
+    print(f"Total Grade: {total_grade:.2f} / 100")
+    print(f"GPA: {gpa:.4f}")
+    print(f"Status: {'PASSED' if passed else 'FAILED'}")
+
+    if resubmit:
+        print("Eligible for resubmission (failed formative with the highest weight):")
+        for row in resubmit:
+            print(f"  - {row['assignment']} (score {row['score']:.0f}, weight {row['weight']:.0f})")
+    else:
+        print("No failed formative assignments. No resubmission needed.")
 
 
 if __name__ == "__main__":
