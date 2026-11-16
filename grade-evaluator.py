@@ -62,29 +62,6 @@ def validate_weights(data):
         errors.append(f"Summative weight is {summative}, expected 40.")
     return errors
 
-def validate_weights(data):
-    """Return a list of error messages. Empty list means weights are valid."""
-    total = 0.0
-    formative = 0.0
-    summative = 0.0
-    for row in data:
-        total += row['weight']
-        if row['group'] == 'Formative':
-            formative += row['weight']
-        elif row['group'] == 'Summative':
-            summative += row['weight']
-        else:
-            return [f"Unknown group '{row['group']}' for '{row['assignment']}'. Use Formative or Summative."]
-
-    errors = []
-    if abs(total - 100) > 0.001:
-        errors.append(f"Total weight is {total}, expected 100.")
-    if abs(formative - 60) > 0.001:
-        errors.append(f"Formative weight is {formative}, expected 60.")
-    if abs(summative - 40) > 0.001:
-        errors.append(f"Summative weight is {summative}, expected 40.")
-    return errors
-
 def calculate_grades(data):
     """Return (formative_points, summative_points) using score * weight / 100."""
     formative_points = 0.0
@@ -108,6 +85,27 @@ def decide_status(formative_points, summative_points):
     summative_pct = (summative_points / 40) * 100
     passed = formative_pct >= 50 and summative_pct >= 50
     return passed, formative_pct, summative_pct
+
+def find_resubmissions(data):
+    """Return failed Formative rows (score < 50) that share the highest weight."""
+    failed = []
+    for row in data:
+        if row['group'] == 'Formative' and row['score'] < 50:
+            failed.append(row)
+
+    if not failed:
+        return []
+
+    highest = failed[0]['weight']
+    for row in failed:
+        if row['weight'] > highest:
+            highest = row['weight']
+
+    eligible = []
+    for row in failed:
+        if row['weight'] == highest:
+            eligible.append(row)
+    return eligible
 
 def evaluate_grades(data):
     """
@@ -144,9 +142,12 @@ def evaluate_grades(data):
     gpa = calculate_gpa(total_grade)
     print(f"GPA: {gpa}")
 
+    resubmit = find_resubmissions(data)
+    print(f"Resubmit: {[row['assignment'] for row in resubmit]}")
+
     passed, formative_pct, summative_pct = decide_status(formative_points, summative_points)
     print(f"Formative %: {formative_pct}, Summative %: {summative_pct}, Passed: {passed}")
-    
+
     # TODO: a) Check if all scores are percentage based (0-100)
     # TODO: b) Validate total weights (Total=100, Summative=40, Formative=60)
     # TODO: c) Calculate the Final Grade and GPA
